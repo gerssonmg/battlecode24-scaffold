@@ -1,4 +1,4 @@
-package Lecture2;
+package Lecture2v0;
 
 import battlecode.common.*;
 
@@ -7,18 +7,20 @@ import java.util.Random;
 public strictfp class RobotPlayer {
 
     public static Random random = null;
+    public static int count = 0;
 
     public static void run(RobotController rc) throws GameActionException {
         while (true) {
             try {
                 if(random == null) random = new Random(rc.getID());
-                trySpawn(rc);
-                if(rc.isSpawned()){
-                    // check round num and call setup / main phase logic
-                    int round = rc.getRoundNum();
-                    if(round <= GameConstants.SETUP_ROUNDS) Setup.runSetup(rc);
-                    else MainPhase.runMainPhase(rc);
+
+                if (!rc.isSpawned()){
+                    MapLocation[] spawnLocs = rc.getAllySpawnLocations();
+                    // Pick a random spawn location to attempt spawning in.
+                    MapLocation randomLoc = spawnLocs[random.nextInt(spawnLocs.length)];
+                    if (rc.canSpawn(randomLoc)) rc.spawn(randomLoc);
                 }
+
             } catch (GameActionException e) {
                 // Oh no! It looks like we did something illegal in the Battlecode world. You should
                 // handle GameActionExceptions judiciously, in case unexpected events occur in the game
