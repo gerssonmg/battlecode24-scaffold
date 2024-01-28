@@ -1,9 +1,7 @@
 package Lecture2;
 
-import battlecode.common.Direction;
-import battlecode.common.GameActionException;
-import battlecode.common.MapLocation;
-import battlecode.common.RobotController;
+import battlecode.common.*;
+
 import java.util.HashSet;
 
 public class Pathfind {
@@ -12,6 +10,9 @@ public class Pathfind {
     private static MapLocation prevDest = null;
     private static HashSet<MapLocation> line = null;
     private static int obstacleStartDist = 0;
+
+    private static MapLocation positionActual = new MapLocation(-1, -1);
+    private static int roundActual = 0;
 
     public static void moveTowards(RobotController rc, MapLocation loc) throws GameActionException {
 
@@ -30,16 +31,36 @@ public class Pathfind {
 
         MapLocation[] crumbLocs = rc.senseNearbyCrumbs(-1);
 
-        if (crumbLocs.length > 0) {
+        int round = rc.getRoundNum();
+
+        if (crumbLocs.length > 0 && round <= GameConstants.SETUP_ROUNDS ) {
             moveTowards(rc, crumbLocs[0]);
         }
 
         if (rc.isMovementReady()) {
             if (direction != null && rc.canMove(direction)) rc.move(direction);
             else {
+
+                if(positionActual.equals(rc.getLocation())){
+                    roundActual+=1;
+                } else {
+                    positionActual = rc.getLocation();
+                    roundActual=0;
+                }
+
+                if(roundActual<5){
+                    whyBugNav(2, rc);
+                } else {
+
+                /**
+                 Se passar 3 round, se se movimentar, forçar aleatorio.
+                 Pode estar preso por agua
+                 **/
                 direction = Direction.allDirections()[RobotPlayer.random.nextInt(8)];
                 if (rc.canMove(direction)) rc.move(direction);
                 else forceMoveFillWater(rc);
+                }
+
             }
         }
         /**

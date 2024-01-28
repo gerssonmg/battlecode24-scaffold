@@ -18,12 +18,13 @@ public strictfp class RobotPlayer {
 //                }
 
                 if(random == null) random = new Random(rc.getID());
+                trySpawn(rc);
 
                 // do bugNavOne
                 // Lecture 5.
-//                if(!rc.isSpawned()){
-//                    Pathfind.resetBug();
-//                }
+                if(!rc.isSpawned()){
+                    Pathfind.resetBug();
+                }
 
                 // Lecture 5. Criando apenas 1 bot
 //                if(rc.readSharedArray(0)==rc.getID())trySpawn(rc);
