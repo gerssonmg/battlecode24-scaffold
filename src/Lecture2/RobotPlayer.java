@@ -11,9 +11,26 @@ public strictfp class RobotPlayer {
     public static void run(RobotController rc) throws GameActionException {
         while (true) {
             try {
+
+                // Lecture 5. Criando apenas 1 bot
+//                if(rc.readSharedArray(0)==0){
+//                    rc.writeSharedArray(0, rc.getID());
+//                }
+
                 if(random == null) random = new Random(rc.getID());
-                trySpawn(rc);
+
+                // do bugNavOne
+                // Lecture 5.
+//                if(!rc.isSpawned()){
+//                    Pathfind.resetBug();
+//                }
+
+                // Lecture 5. Criando apenas 1 bot
+//                if(rc.readSharedArray(0)==rc.getID())trySpawn(rc);
+
                 if(rc.isSpawned()){
+//                    Pathfind.whyBugNav(1, rc);
+
                     // check round num and call setup / main phase logic
                     int round = rc.getRoundNum();
                     if(round <= GameConstants.SETUP_ROUNDS) Setup.runSetup(rc);
