@@ -9,6 +9,7 @@ public class MainPhase {
     public static void runMainPhase(RobotController rc) throws GameActionException {
 
         //try to buy action and capturing upgrades
+        // Tenta comprar uma atualizaçao
         if(rc.canBuyGlobal(GlobalUpgrade.ACTION)){
             rc.buyGlobal(GlobalUpgrade.ACTION);
         } if (rc.canBuyGlobal(GlobalUpgrade.CAPTURING)) {
@@ -16,6 +17,8 @@ public class MainPhase {
         }
 
         //attack enemies, prioritizing enemies that have your flag
+        // Pega posição dos inimigos e se tiver com a bandeira aliada
+        // ataca
         RobotInfo[] nearbyEnemies = rc.senseNearbyRobots(-1, rc.getTeam().opponent());
         for(RobotInfo robot : nearbyEnemies){
             if(robot.hasFlag()){
@@ -23,6 +26,8 @@ public class MainPhase {
                 if(rc.canAttack(robot.getLocation())) rc.attack(robot.getLocation());
             }
         }
+
+        // ataca
         for(RobotInfo robot : nearbyEnemies){
             if(rc.canAttack(robot.getLocation())) {
                 rc.attack(robot.getLocation());
@@ -33,12 +38,21 @@ public class MainPhase {
             if(rc.canHeal(robot.getLocation())) rc.heal(robot.getLocation());
         }
 
+        /**
+            Se não tiver com a flag, pega todas as flags
 
+            Pega a flag mais proxima, e se move em direção dela
+            Se poder pegar a flag, pega
+
+            Se movimento para algum lugar
+         **/
         if (!rc.hasFlag()) {
             ArrayList<MapLocation> flagLocs = new ArrayList<>();
+            // cost 50
             FlagInfo[] enemyFlags = rc.senseNearbyFlags(-1, rc.getTeam().opponent());
             for (FlagInfo flag : enemyFlags) flagLocs.add(flag.getLocation());
             if (flagLocs.size() == 0) {
+                // cost 100
                 MapLocation[] broadcastLocs = rc.senseBroadcastFlagLocations();
                 for (MapLocation flagLoc : broadcastLocs) flagLocs.add(flagLoc);
             }
@@ -50,6 +64,10 @@ public class MainPhase {
             }
 
             Pathfind.explore(rc);
+
+            /**
+             * Se esta com uma flag inimiga, va para uma base aliada
+             * **/
         } else {
             MapLocation[] spawnLocs = rc.getAllySpawnLocations();
             MapLocation closestSpawn = findClosestLocation(rc.getLocation(), Arrays.asList(spawnLocs));

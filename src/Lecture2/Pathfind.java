@@ -24,17 +24,35 @@ public class Pathfind {
         //
         //
 
-        MapLocation[] crumbLocs = rc.senseNearbyCrumbs(-1);
-        if (crumbLocs.length > 0) {
-            moveTowards(rc, crumbLocs[0]);
-        }
+
 
         if (rc.isMovementReady()) {
             if (direction != null && rc.canMove(direction)) rc.move(direction);
             else {
                 direction = Direction.allDirections()[RobotPlayer.random.nextInt(8)];
                 if (rc.canMove(direction)) rc.move(direction);
+                else forceMoveFillWater(rc);
             }
         }
+        /**
+         * Se não se moveu, e pq deve estar empedido por agua.
+         * Então pegue uma direção aleatoria e tente ir para la.
+         * **/
+        else {
+            forceMoveFillWater(rc);
+        }
+
+        MapLocation[] crumbLocs = rc.senseNearbyCrumbs(-1);
+        if (crumbLocs.length > 0) {
+            moveTowards(rc, crumbLocs[0]);
+        }
+    }
+
+    public static void forceMoveFillWater(RobotController rc) throws GameActionException {
+        MapLocation positionActual = rc.getLocation();
+
+        Direction randomDir = Direction.allDirections()[RobotPlayer.random.nextInt(8)];
+        MapLocation positionAuxNearby = positionActual.add(randomDir);
+        moveTowards(rc, positionAuxNearby);
     }
 }
